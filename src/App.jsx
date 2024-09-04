@@ -1,0 +1,190 @@
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import confetti from 'canvas-confetti';
+
+const GRID_SIZE = 3;
+const TILE_COUNT = GRID_SIZE * GRID_SIZE;
+const EMPTY_TILE_ID = TILE_COUNT;
+
+const App = () => {
+  const [tiles, setTiles] = useState([]);
+  const [isComplete, setIsComplete] = useState(false);
+  const [imageUrl, setImageUrl] = useState('');
+  const [isScrambling, setIsScrambling] = useState(false);
+
+  useEffect(() => {
+    if (imageUrl) {
+      initializePuzzle();
+    }
+  }, [imageUrl]);
+
+  const initializePuzzle = () => {
+    const newTiles = Array.from({ length: TILE_COUNT }, (_, i) => ({
+      id: i + 1,
+      img:  imageUrl, // Image for the final tile as well
+      position: `${-((i % GRID_SIZE) * 100)}% ${-Math.floor(i / GRID_SIZE) * 100}%`,
+    }));
+    newTiles[TILE_COUNT - 1].img = null; // Start with the last tile as empty
+    setTiles(newTiles);
+    setTimeout(() => {
+      setIsScrambling(true);
+      shuffleTiles(newTiles);
+    }, 2000);
+  };
+
+  const shuffleTiles = (tilesArray) => {
+    let solvable = false;
+    while (!solvable) {
+      for (let i = tilesArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [tilesArray[i], tilesArray[j]] = [tilesArray[j], tilesArray[i]];
+      }
+      solvable = isSolvable(tilesArray);
+    }
+    setTiles(tilesArray);
+    setTimeout(() => setIsScrambling(false), 1000);
+  };
+
+  const moveTile = (index) => {
+    if (isComplete) return;
+    const emptyIndex = tiles.findIndex((t) => t.id === EMPTY_TILE_ID);
+    if (!isAdjacent(index, emptyIndex)) return;
+
+    const newTiles = [...tiles];
+    [newTiles[index], newTiles[emptyIndex]] = [newTiles[emptyIndex], newTiles[index]];
+    setTiles(newTiles);
+
+    if (isSolved(newTiles)) {
+      setIsComplete(true);
+      newTiles[TILE_COUNT-1].img = imageUrl; // Show the final image piece when solved
+      setTiles(newTiles);
+      setTimeout(() => {
+        const duration = 5 * 1000; // 5 seconds
+        const end = Date.now() + duration;
+
+        const frame = () => {
+          confetti({
+            particleCount: 3,
+            startVelocity: 30,
+            spread: 360,
+            ticks: 60,
+            origin: {
+              x: Math.random(),
+              y: Math.random() - 0.2
+            }
+          });
+          if (Date.now() < end) {
+            requestAnimationFrame(frame);
+          }
+        };
+
+        frame();
+      }, 500);
+    }
+  };
+
+  const isAdjacent = (index1, index2) => {
+    const row1 = Math.floor(index1 / GRID_SIZE);
+    const col1 = index1 % GRID_SIZE;
+    const row2 = Math.floor(index2 / GRID_SIZE);
+    const col2 = index2 % GRID_SIZE;
+    return Math.abs(row1 - row2) + Math.abs(col1 - col2) === 1;
+  };
+
+  const isSolvable = (tilesArray) => {
+    let inversionCount = 0;
+    for (let i = 0; i < TILE_COUNT - 1; i++) {
+      for (let j = i + 1; j < TILE_COUNT; j++) {
+        if (tilesArray[i].id !== EMPTY_TILE_ID && tilesArray[j].id !== EMPTY_TILE_ID && tilesArray[i].id > tilesArray[j].id) {
+          inversionCount++;
+        }
+      }
+    }
+    return inversionCount % 2 === 0;
+  };
+
+  const isSolved = (tilesArray) => {
+    return tilesArray.every((tile, index) => tile.id === index + 1);
+  };
+
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImageUrl(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">
+      <h1 className="text-4xl font-bold text-white mb-8">Happy Anniversary Puzzle!</h1>
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleImageUpload}
+        className="mb-4 p-2 rounded bg-white"
+      />
+      {imageUrl && (
+        <motion.div 
+          className="grid grid-cols-3 gap-1 bg-white p-2 rounded-lg shadow-lg"
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <AnimatePresence>
+            {tiles.map((tile, index) => (
+              <motion.div
+                key={tile.id}
+                className={`w-32 h-32 ${
+                  tile.id === EMPTY_TILE_ID && !isComplete ? 'bg-transparent' : 'bg-gray-200'
+                } rounded-md cursor-pointer overflow-hidden`}
+                onClick={() => moveTile(index)}
+                layout
+                initial={isScrambling ? { scale: 0 } : false}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0 }}
+                transition={{ 
+                  type: 'spring', 
+                  stiffness: 300, 
+                  damping: 30,
+                  duration: isScrambling ? 0.5 : 0.3
+                }}
+              >
+                {tile.img && (
+                  <motion.div
+                    style={{
+                      width: '300%',
+                      height: '300%',
+                      backgroundImage: `url(${tile.img})`,
+                      backgroundPosition: tile.position,
+                      backgroundSize: '300% 300%',
+                      transform: 'scale(0.33333)',
+                      transformOrigin: 'top left',
+                    }}
+                    initial={isComplete && tile.id === EMPTY_TILE_ID ? { opacity: 0, scale: 0 } : false}
+                    animate={isComplete && tile.id === EMPTY_TILE_ID ? { opacity: 1, scale: 1 } : {}}
+                    transition={{ delay: 0.5, duration: 0.5 }}
+                  />
+                )}
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+      )}
+      {isComplete && (
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-8 text-2xl font-semibold text-white"
+        >
+          Congratulations! Puzzle Solved!
+        </motion.div>
+      )}
+    </div>
+  );
+};
+
+export default App;
