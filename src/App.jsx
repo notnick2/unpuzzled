@@ -60,28 +60,7 @@ const App = () => {
       setIsComplete(true);
       newTiles[TILE_COUNT-1].img = imageUrl;
       setTiles(newTiles);
-      setTimeout(() => {
-        const duration = 5 * 1000;
-        const end = Date.now() + duration;
-
-        const frame = () => {
-          confetti({
-            particleCount: 3,
-            startVelocity: 30,
-            spread: 360,
-            ticks: 60,
-            origin: {
-              x: Math.random(),
-              y: Math.random() - 0.2
-            }
-          });
-          if (Date.now() < end) {
-            requestAnimationFrame(frame);
-          }
-        };
-
-        frame();
-      }, 500);
+      triggerConfetti();
     }
   };
 
@@ -131,9 +110,54 @@ const App = () => {
     }, 500);
   };
 
+  const handleAutoSolve = () => {
+    const solvedTiles = Array.from({ length: TILE_COUNT }, (_, i) => ({
+      id: i + 1,
+      img: imageUrl,
+      position: `${-((i % GRID_SIZE) * 100)}% ${-Math.floor(i / GRID_SIZE) * 100}%`,
+    }));
+    setTiles(solvedTiles);
+    setIsComplete(true);
+    triggerConfetti();
+  };
+
+  const triggerConfetti = () => {
+    const duration = 5 * 1000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+    function randomInRange(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    const interval = setInterval(function() {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      const particleCount = 50 * (timeLeft / duration);
+
+      confetti(Object.assign({}, defaults, {
+        particleCount,
+        origin: { x: randomInRange(0.1, 0.9), y: Math.random() - 0.2 },
+        colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'],
+        shapes: ['circle', 'square'],
+        scalar: randomInRange(0.4, 1)
+      }));
+      confetti(Object.assign({}, defaults, {
+        particleCount: particleCount * 0.5,
+        origin: { x: randomInRange(0.1, 0.9), y: Math.random() - 0.2 },
+        colors: ['#ffffff'],
+        shapes: ['star']
+      }));
+    }, 250);
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 p-4">
-      <h1 className="mb-6 md:mb-10 text-center">
+       <h1 className="mb-6 md:mb-10 text-center">
         <span className="block text-4xl md:text-6xl font-bold font-['Brush Script MT', 'Brush Script Std', cursive] text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-rose-400 to-fuchsia-500 leading-tight tracking-wide mb-3" style={{textShadow: '2px 2px 4px rgba(255,215,0,0.2)'}}>
           Happy Anniversary
         </span>
@@ -225,6 +249,14 @@ const App = () => {
         >
           Congratulations! Puzzle Solved!
         </motion.div>
+      )}
+      {!isComplete && imageUrl && (
+        <button
+          onClick={handleAutoSolve}
+          className="mt-4 px-6 py-3 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-full shadow-lg hover:from-green-500 hover:to-blue-600 transition duration-300 font-semibold text-lg"
+        >
+          Can't solve the puzzle it takes 250+ moves? Click here to complete it!
+        </button>
       )}
     </div>
   );
