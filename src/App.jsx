@@ -24,7 +24,7 @@ const App = () => {
       img:  imageUrl, // Image for the final tile as well
       position: `${-((i % GRID_SIZE) * 100)}% ${-Math.floor(i / GRID_SIZE) * 100}%`,
     }));
-    newTiles[TILE_COUNT - 1].img = null; // Start with the last tile as empty
+    newTiles[TILE_COUNT - 1].img = null;
     setTiles(newTiles);
     setTimeout(() => {
       setIsScrambling(true);
