@@ -13,6 +13,7 @@ const App = () => {
   const [imageUrl, setImageUrl] = useState('');
   const [isScrambling, setIsScrambling] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [moveCount, setMoveCount] = useState(0);
 
   useEffect(() => {
     if (imageUrl) {
@@ -21,13 +22,17 @@ const App = () => {
   }, [imageUrl]);
 
   const initializePuzzle = () => {
-    const newTiles = Array.from({ length: TILE_COUNT }, (_, i) => ({
-      id: i + 1,
-      img:  imageUrl,
-      position: `${-((i % GRID_SIZE) * 100)}% ${-Math.floor(i / GRID_SIZE) * 100}%`,
-    }));
+    const newTiles = [];
+    for (let i = 0; i < TILE_COUNT; i++) {
+      newTiles.push({
+        id: i + 1,
+        img: imageUrl,
+        position: `${-((i % GRID_SIZE) * 100)}% ${-Math.floor(i / GRID_SIZE) * 100}%`,
+      });
+    }
     newTiles[TILE_COUNT - 1].img = null;
     setTiles(newTiles);
+    setMoveCount(0);
     setTimeout(() => {
       setIsScrambling(true);
       shuffleTiles(newTiles);
@@ -55,6 +60,7 @@ const App = () => {
     const newTiles = [...tiles];
     [newTiles[index], newTiles[emptyIndex]] = [newTiles[emptyIndex], newTiles[index]];
     setTiles(newTiles);
+    setMoveCount(prevCount => prevCount + 1);
 
     if (isSolved(newTiles)) {
       setIsComplete(true);
@@ -231,9 +237,6 @@ const App = () => {
                       transform: 'scale(0.33333)',
                       transformOrigin: 'top left',
                     }}
-                    initial={isComplete && tile.id === EMPTY_TILE_ID ? { opacity: 0, scale: 0 } : false}
-                    animate={isComplete && tile.id === EMPTY_TILE_ID ? { opacity: 1, scale: 1 } : {}}
-                    transition={{ delay: 0.5, duration: 0.5 }}
                   />
                 )}
               </motion.div>
@@ -245,17 +248,19 @@ const App = () => {
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-4 md:mt-8 text-xl md:text-2xl font-semibold text-white text-center"
+          className="mt-4 md:mt-8 text-2xl md:text-3xl font-bold text-center"
         >
-          Congratulations! Puzzle Solved!
+          <p className="mb-2 text-rose-700">🎉 Congratulations 🎉</p>
+          <p className="text-xl md:text-2xl text-pink-200">You've solved the puzzle of love in {moveCount} moves!</p>
+          <p className="text-lg md:text-xl mt-2 text-amber-200">May your journey together be as beautiful as this moment.</p>
         </motion.div>
       )}
-      {!isComplete && imageUrl && (
+      {!isComplete && imageUrl && moveCount >= 10 && (
         <button
           onClick={handleAutoSolve}
           className="mt-4 px-6 py-3 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-full shadow-lg hover:from-green-500 hover:to-blue-600 transition duration-300 font-semibold text-lg"
         >
-          Can't solve the puzzle it takes 250+ moves? Click here to complete it!
+          Need a little help? Click here to complete the puzzle!
         </button>
       )}
     </div>
