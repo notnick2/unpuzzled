@@ -3,15 +3,12 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import confetti from 'canvas-confetti'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent } from "@/components/ui/card"
 
 const GRID_SIZE = 3
 const TILE_COUNT = GRID_SIZE * GRID_SIZE
 const EMPTY_TILE_ID = TILE_COUNT
 
-export default function App() {
+export default function AnniversaryPuzzle() {
   const [tiles, setTiles] = useState([])
   const [isComplete, setIsComplete] = useState(false)
   const [imageUrl, setImageUrl] = useState('')
@@ -180,30 +177,37 @@ export default function App() {
         </span>
       </h1>
       <div className="flex flex-col items-center mb-4 w-full max-w-xs">
-        <Input
+        <input
           id="file-upload"
           type="file"
           accept="image/*"
           onChange={handleImageUpload}
           className="hidden"
         />
-        <label htmlFor="file-upload">
-          <Button variant="outline" className="mb-2 w-full">
-            Choose Your Image
-          </Button>
+        <label
+          htmlFor="file-upload"
+          className="mb-2 w-full px-4 py-2 bg-white text-gray-800 rounded-md shadow-sm border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 cursor-pointer text-center"
+        >
+          Choose Your Image
         </label>
-        <Button variant="secondary" onClick={handleDefaultImage} className="w-full mb-2">
+        <button
+          onClick={handleDefaultImage}
+          className="w-full mb-2 px-4 py-2 bg-gray-200 text-gray-800 rounded-md shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+        >
           Use Default Image
-        </Button>
+        </button>
         {imageUrl && (
-          <Button onClick={handlePreview} className="w-full">
+          <button
+            onClick={handlePreview}
+            className="w-full px-4 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
             Preview Puzzle
-          </Button>
+          </button>
         )}
       </div>
       {imageUrl && (
-        <Card className="w-full max-w-xs md:max-w-md">
-          <CardContent className="p-2">
+        <div className="w-full max-w-xs md:max-w-md bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="p-2">
             <motion.div
               className="grid grid-cols-3 gap-1"
               initial={{ opacity: 0, scale: 0.5 }}
@@ -251,8 +255,8 @@ export default function App() {
                 ))}
               </AnimatePresence>
             </motion.div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
       {isComplete && (
         <motion.div
@@ -266,9 +270,12 @@ export default function App() {
         </motion.div>
       )}
       {!isComplete && imageUrl && moveCount >= 10 && (
-        <Button onClick={handleAutoSolve} className="mt-4">
+        <button
+          onClick={handleAutoSolve}
+          className="mt-4 px-4 py-2 bg-green-500 text-white rounded-md shadow-sm hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+        >
           Need help? Click to complete the puzzle
-        </Button>
+        </button>
       )}
     </div>
   )
