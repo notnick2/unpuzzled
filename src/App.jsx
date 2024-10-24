@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import confetti from 'canvas-confetti'
+import defaultImage from './assets/pexels-plant.webp';
 
 const GRID_SIZE = 3
 const TILE_COUNT = GRID_SIZE * GRID_SIZE
@@ -107,8 +108,8 @@ export default function AnniversaryPuzzle() {
   }
 
   const handleDefaultImage = () => {
-    setImageUrl('/placeholder.svg?height=300&width=300')
-  }
+    setImageUrl(defaultImage);
+  };
 
   const handlePreview = () => {
     setShowPreview(true)
@@ -186,20 +187,20 @@ export default function AnniversaryPuzzle() {
         />
         <label
           htmlFor="file-upload"
-          className="mb-2 w-full px-4 py-2 bg-white text-gray-800 rounded-md shadow-sm border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 cursor-pointer text-center"
+          className="mb-2 w-full px-4 py-2 m-2 bg-white text-gray-800 rounded-md shadow-sm border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 cursor-pointer text-center"
         >
           Choose Your Image
         </label>
         <button
           onClick={handleDefaultImage}
-          className="w-full mb-2 px-4 py-2 bg-gray-200 text-gray-800 rounded-md shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+          className="w-full mb-2 px-4 py-2 m-2 bg-gray-200 text-gray-800 rounded-md shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
         >
           Use Default Image
         </button>
         {imageUrl && (
           <button
             onClick={handlePreview}
-            className="w-full px-4 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className=" px-4 py-2 bg-blue-400 m-2 text-white rounded-md shadow-xl hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             Preview Puzzle
           </button>
