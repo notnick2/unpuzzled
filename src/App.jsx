@@ -165,15 +165,15 @@ const App = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 p-4">
        <h1 className="mb-6 md:mb-10 text-center">
         <span className="block text-4xl md:text-6xl font-bold font-['Brush Script MT', 'Brush Script Std', cursive] text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-rose-400 to-fuchsia-500 leading-tight tracking-wide mb-3" style={{textShadow: '2px 2px 4px rgba(255,215,0,0.2)'}}>
-          Happy Anniversary
+          UNPUZZLED
         </span>
         <span className="block text-2xl md:text-3xl font-medium font-['Lucida Handwriting', 'Brush Script MT', cursive] text-pink-200 italic" style={{textShadow: '1px 1px 2px rgba(255,105,180,0.3)'}}>
-          Make this day special by solving this Puzzle!
+          unpuzzle like a pro!
         </span>
       </h1>
       <div className="flex flex-col items-center mb-4 w-full max-w-xs">
         <label htmlFor="file-upload" className="mb-2 px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-full shadow-lg hover:from-pink-600 hover:to-purple-700 transition duration-300 cursor-pointer font-semibold text-lg">
-          Choose Your Special Photo
+          Choose Your picture
         </label>
         <input
           id="file-upload"
@@ -251,8 +251,8 @@ const App = () => {
           className="mt-4 md:mt-8 text-2xl md:text-3xl font-bold text-center"
         >
           <p className="mb-2 text-rose-700">🎉 Congratulations 🎉</p>
-          <p className="text-xl md:text-2xl text-pink-200">You've solved the puzzle of love in {moveCount} moves!</p>
-          <p className="text-lg md:text-xl mt-2 text-amber-200">May your journey together be as beautiful as this moment.</p>
+          <p className="text-xl md:text-2xl text-pink-200">Congratulations! You're a Puzzle Pro!</p>
+          <p className="text-lg md:text-xl mt-2 text-amber-200">It took you {moveCount} moves to solve it. Can you beat your record?</p>
         </motion.div>
       )}
       {!isComplete && imageUrl && moveCount >= 10 && (
